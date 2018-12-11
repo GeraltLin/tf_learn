@@ -64,20 +64,23 @@ for index,data in enumerate(digits.images):
 # print(len(seven_data))
 seven_data = seven_data[:50]
 one_data.extend(seven_data)
-label = np.zeros(232,dtype=np.uint8)
+label = np.zeros(232)
 label[-1:-50:-1]=1
-label = to_categorical(label,num_classes=2)
+# label = to_categorical(label,num_classes=2)
+
 data = one_data
 data = list(map(lambda x:x.reshape(-1,),data))
 
 
 # print(len(data))
 x_train, x_test, y_train, y_test = train_test_split(data, label, test_size=0.3, random_state=0)
-y_train = y_train.reshape(-1,2)
-y_test = y_test.reshape(-1,2)
+y_train = y_train.reshape(1,-1)[0]
+y_test = y_test.reshape(1,-1)[0]
+print(y_test)
 X = tf.placeholder(dtype=tf.float32,shape=[None,64])
-Y = tf.placeholder(dtype=tf.float32,shape=[None,2])
-
+Y = tf.placeholder(dtype=tf.int32,shape=[None,1])
+Y = tf.one_hot(Y,2)
+Y = tf.squeeze(Y,axis=1)
 h1 = tf.layers.dense(inputs=X,units=10,activation='sigmoid')
 p = tf.layers.dense(inputs=h1,units=2)
 cost = tf.losses.sigmoid_cross_entropy(multi_class_labels=Y,logits=p)
