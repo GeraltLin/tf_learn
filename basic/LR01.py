@@ -33,6 +33,7 @@ display_step = 2
 with tf.Session() as sess:
     sess.run(init)
 
+
     # Fit all training data
     for epoch in range(training_epochs):
         for (x, y) in zip(train_X, train_Y):
@@ -42,7 +43,6 @@ with tf.Session() as sess:
         if epoch % display_step == 0:
             loss = sess.run(cost, feed_dict={X: train_X, Y:train_Y})
             print ("Epoch:", epoch+1, "cost=", loss,"W=", sess.run(W), "b=", sess.run(b))
-
 
     print (" Finished!")
     print ("cost=", sess.run(cost, feed_dict={X: train_X, Y: train_Y}), "W=", sess.run(W), "b=", sess.run(b))
