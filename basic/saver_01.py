@@ -11,15 +11,15 @@ import matplotlib.pyplot as plt
 train_X = np.linspace(-1, 1, 100)
 train_Y = 2 * train_X + np.random.randn(train_X.shape[0]) * 0.3 # y=2x，但是加入了噪声
 data_ph ={
-    'x':tf.placeholder(dtype=tf.float32),
-    'y':tf.placeholder(dtype=tf.float32)
+    'x':tf.placeholder(dtype=tf.float32,name='x'),
+    'y':tf.placeholder(dtype=tf.float32,name='y')
 }
 
+with tf.variable_scope("fc"):
+    W = tf.Variable(tf.random_normal([1]),name='w')
+    b = tf.Variable(tf.random_normal([1]),name='b')
 
-W = tf.Variable(tf.random_normal([1]),name='w')
-b = tf.Variable(tf.random_normal([1]),name='b')
-
-Z = tf.multiply(data_ph['x'],W)+b
+    Z = tf.add((tf.multiply(data_ph['x'],W)),b,name='z')
 
 cost = tf.losses.mean_squared_error(data_ph['y'],Z)
 
@@ -30,7 +30,7 @@ training_epochs = 200
 display_step = 2
 saver = tf.train.Saver()
 
-config = tf.ConfigProto(log_device_placement=True,allow_soft_placement
+config = tf.ConfigProto(log_device_placement=False,allow_soft_placement
 =True)
 # 启动session
 config.gpu_options.allow_growth = True
