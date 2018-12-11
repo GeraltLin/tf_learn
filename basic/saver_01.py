@@ -40,7 +40,7 @@ with tf.Session(config=config) as sess:
     # Fit all training data
     for epoch in range(training_epochs):
         if epoch%50 ==0:
-            saver.save(sess,'./LR.ckpt',global_step=epoch+1)
+            saver.save(sess,'../LR_model/LR.ckpt',global_step=epoch+1)
         for (x, y) in zip(train_X, train_Y):
             sess.run(optimizer, feed_dict={data_ph['x']: x, data_ph['y']: y})
 

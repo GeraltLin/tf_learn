@@ -10,13 +10,13 @@ import matplotlib.pyplot as plt
 
 
 
-saver = tf.train.import_meta_graph("LR.ckpt-151.meta")
+saver = tf.train.import_meta_graph("../LR_model/LR.ckpt-151.meta")
 config = tf.ConfigProto(log_device_placement=True,allow_soft_placement
 =True)
 # 启动session
 config.gpu_options.allow_growth = True
 with tf.Session(config=config) as sess:
-    kpt = tf.train.latest_checkpoint('.')
+    kpt = tf.train.latest_checkpoint('../LR_model')
     if kpt != None:
         saver.restore(sess, kpt)
         graph = tf.get_default_graph()
