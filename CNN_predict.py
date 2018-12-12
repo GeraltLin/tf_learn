@@ -6,16 +6,9 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 from tfrecorder import TFrecorder
-from matplotlib import pyplot as plt
-import matplotlib.image as mpimg
 
-# # input_fn's
-
-# In[2]:
 
 tfr = TFrecorder()
-
-
 def input_fn_maker(path, data_info_path, shuffle=False, batch_size=1, epoch=1, padding=None):
     def input_fn():
         filenames = tfr.get_filenames(path=path, shuffle=shuffle)
@@ -27,18 +20,17 @@ def input_fn_maker(path, data_info_path, shuffle=False, batch_size=1, epoch=1, p
     return input_fn
 
 
+
+flags = tf.app.flags
+flags.DEFINE_string('saved_model_dir', 'mnist_model_cnn',
+                    'Output directory for model and training stats.')
+FLAGS = flags.FLAGS
+
+
+
 padding_info = ({'image': [784, ], 'label': []})
 test_input_fn = input_fn_maker('mnist_tfrecord/test/', 'mnist_tfrecord/data_info.csv', batch_size=512,
                                padding=padding_info)
-train_input_fn = input_fn_maker('mnist_tfrecord/train/', 'mnist_tfrecord/data_info.csv', shuffle=True, batch_size=128,
-                                padding=padding_info)
-train_eval_fn = input_fn_maker('mnist_tfrecord/train/', 'mnist_tfrecord/data_info.csv', batch_size=512,
-                               padding=padding_info)
-
-
-# # model
-
-# In[3]:
 
 def model_fn(features, mode):
     # reshape 784维的图片到28x28的平面表达，1为channel数
@@ -100,94 +92,37 @@ def model_fn(features, mode):
     return tf.estimator.EstimatorSpec(mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
 
 
-# # logging
 
-# In[4]:
+def get_estimator(config):
+    '''Return the model as a Tensorflow Estimator object.'''
+    return tf.estimator.Estimator(model_fn=model_fn, config=config)
 
-# Set up logging for predictions
-tensors_to_log = {"probabilities": "softmax_tensor",
-                  "probabilities": "softmax_tensor", }
-logging_hook = tf.train.LoggingTensorHook(tensors=tensors_to_log, every_n_iter=50)
 
-# # create estimator
 
-# In[5]:
 
-mnist_classifier = tf.estimator.Estimator(
-    model_fn=model_fn, model_dir="mnist_model_cnn")
 
-# # train
+# tensors_to_log = {"probabilities": "softmax_tensor",
+#                   "probabilities": "softmax_tensor", }
+#
+#
+# mnist_classifier = tf.estimator.Estimator(
+#     model_fn=model_fn, model_dir="mnist_model_cnn")
+#
+# print("======================================================")
+# predicts = list(mnist_classifier.predict(input_fn=test_input_fn))
+#
+# print("======================================================")
 
-# In[6]:
+# predicts = list(mnist_classifier.predict(input_fn=test_input_fn))
 
-mnist_classifier.train(
-    input_fn=train_input_fn)
-
-# # evaluate train set
-
-# In[7]:
-
-eval_results = mnist_classifier.evaluate(input_fn=train_eval_fn)
-print('train set')
-print(eval_results)
-
-# # evaluate test set
-
-# In[ ]:
-
-eval_results = mnist_classifier.evaluate(input_fn=test_input_fn)
-print('test set')
-print(eval_results)
-
-# # predict
-
-# In[ ]:
-
-predicts = list(mnist_classifier.predict(input_fn=test_input_fn))
-
-# # print predictions
-
-# In[ ]:
-
-predicts[0].keys()
-
-# In[ ]:
-
-predicts[0]['image'].shape
-
-# In[ ]:
-
-plt.imshow(predicts[0]['image'][:, :, 0], cmap=plt.cm.gray)
-
-# In[ ]:
-
-plt.figure(num=4, figsize=(28, 28))
-for i in range(4):
-    plt.subplot(1, 4, i + 1)
-    plt.imshow(predicts[0]['conv1_out'][:, :, i], cmap=plt.cm.gray)
-plt.savefig('conv1_out.png')
-
-# In[ ]:
-
-plt.figure(num=4, figsize=(14, 14))
-for i in range(4):
-    plt.subplot(1, 4, i + 1)
-    plt.imshow(predicts[0]['pool1_out'][:, :, i], cmap=plt.cm.gray)
-plt.savefig('pool1_out.png')
-
-# In[ ]:
-
-plt.figure(num=8, figsize=(14, 14))
-for i in range(8):
-    plt.subplot(1, 8, i + 1)
-    plt.imshow(predicts[0]['conv2_out'][:, :, i], cmap=plt.cm.gray)
-plt.savefig('conv2_out.png')
-
-# In[ ]:
-
-plt.figure(num=8, figsize=(14, 14))
-for i in range(8):
-    plt.subplot(1, 8, i + 1)
-    plt.imshow(predicts[0]['pool2_out'][:, :, i], cmap=plt.cm.gray)
-plt.savefig('pool2_out.png')
-
+config = tf.estimator.RunConfig()
+config = config.replace(model_dir=FLAGS.saved_model_dir)
+estimator = get_estimator(config)
+predict_input_fn = test_input_fn
+result = estimator.predict(input_fn=predict_input_fn)
+for r in result:
+    print(r)
+print('==========================================')
+result = estimator.predict(input_fn=predict_input_fn)
+for r in result:
+    print(r)
