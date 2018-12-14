@@ -1,0 +1,3 @@
+default,isbyte,length_type,name,shape,type
+,False,fixed,image,"(784,)",float32
+,False,fixed,label,(),int64
