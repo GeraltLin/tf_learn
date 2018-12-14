@@ -40,18 +40,11 @@ label[-1:-50:-1]=1
 data = one_data
 data = list(map(lambda x:x.reshape(-1,),data))
 
-
-# print(len(data))
 x_train, x_test, y_train, y_test = train_test_split(data, label, test_size=0.3, random_state=0)
 y_train = y_train.reshape(1,-1)[0]
 y_test = y_test.reshape(1,-1)[0]
-from collections import Counter
-print(Counter(y_train))
-from sklearn.utils.class_weight import compute_class_weight
-print(np.unique(y_train))
-class_weights = compute_class_weight('balanced', np.unique(y_train), y_train)
 
-print(class_weights)
+
 X = tf.placeholder(dtype=tf.float32,shape=[None,64])
 Y = tf.placeholder(dtype=tf.int32)# print(Y)
 y_one_hot = tf.one_hot(Y, 2)
@@ -61,17 +54,19 @@ y_one_hot = tf.cast(y_one_hot,tf.float32)
 h1 = tf.layers.dense(inputs=X,units=10,activation='sigmoid')
 p = tf.layers.dense(inputs=h1,units=2)
 
+cost_matrix = tf.constant(
+                np.array([[0,1],[10,0]]),
+                dtype = tf.float32
+            )
+
+cost_matrix = tf.nn.embedding_lookup(
+                cost_matrix,Y
+            )
 
 
-
-
-
-cost = tf.losses.sigmoid_cross_entropy(multi_class_labels=y_one_hot,logits=p)
-w = np.array([1,1],dtype='float32').reshape([2,1])
-w_ls=tf.Variable(w,name="w_ls",trainable=False)
-w_temp = tf.matmul(y_one_hot, w_ls) #代价敏感因子，w是权重项链表
-loss=tf.reduce_mean(tf.multiply(cost,w_temp))  #代价敏感下的交叉熵损失
-
+loss = - tf.log(1 - tf.nn.softmax(p))* cost_matrix
+# rs = tf.reduce_sum(loss)
+loss = tf.reduce_mean(loss)
 optimizer = tf.train.AdamOptimizer(learning_rate = 0.01).minimize(loss)
 
 
@@ -97,9 +92,18 @@ with tf.Session() as sess:
         # print(y_)
         #显示训练中的详细信息
         if epoch % display_step == 0:
-            acc = sess.run(accuracy, feed_dict={X: x_test, Y:y_test})
+            cm, acc = sess.run((cost_matrix,accuracy), feed_dict={X: x_train, Y:y_train})
+
 
             print('epoch{}:{}'.format(epoch,acc))
+
+            loss_, acc = sess.run((loss,accuracy), feed_dict={X: x_test, Y:y_test})
+
+            print('epoch{}:{}'.format(epoch,loss_))
+
+
+            # print(y_test)
+            # print(cm)
 
 
 
