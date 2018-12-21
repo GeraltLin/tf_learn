@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 
 
-saver = tf.train.import_meta_graph("../LR_model/LR.ckpt-151.meta")
+saver = tf.train.import_meta_graph("../LR_model/LR.ckpt-666.meta")
 config = tf.ConfigProto(log_device_placement=True,allow_soft_placement
 =True)
 # 启动session
@@ -26,7 +26,7 @@ with tf.Session(config=config) as sess:
     feed_dict = {x:3}
     print(sess.run(z,feed_dict=feed_dict))
     print(sess.run(z,feed_dict=feed_dict))
-    saver.save(sess,'../LR_model/LR.ckpt',global_step=666)
+    # saver.save(sess,'../LR_model/LR.ckpt',global_step=666)
 
     for tensor in tensor_list:
         print(tensor)
