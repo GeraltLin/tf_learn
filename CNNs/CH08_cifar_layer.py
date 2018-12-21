@@ -3,7 +3,6 @@
 @author: linwenxing
 @contact: linwx.mail@gmail.com
 '''
-
 from CNNs.download_cifar import cifar10_input
 import tensorflow as tf
 import numpy as np
