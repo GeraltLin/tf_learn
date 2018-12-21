@@ -34,7 +34,7 @@ tf.data API 支持多种文件格式，因此您可以处理那些不适合存�
 通过 tf.data.TFRecordDataset 类，您可以将一个或多个 TFRecord 文件的内容作为输入管道的一部分进行流式传输。
 """
 def _parse_function(example_proto):
-  features = {"x": tf.FixedLenFeature((), tf.string ),
+  features = {"x": tf.FixedLenFeature((), tf.float32),
               "y": tf.FixedLenFeature((), tf.int64 )}
   parsed_features = tf.parse_single_example(example_proto, features)
   return parsed_features["x"], parsed_features["y"]
