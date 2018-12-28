@@ -55,7 +55,7 @@ h1 = tf.layers.dense(inputs=X,units=10,activation='sigmoid')
 p = tf.layers.dense(inputs=h1,units=2)
 
 cost_matrix = tf.constant(
-                np.array([[0,1],[10,0]]),
+                np.array([[0,100],[10,0]]),
                 dtype = tf.float32
             )
 
@@ -92,14 +92,13 @@ with tf.Session() as sess:
         # print(y_)
         #显示训练中的详细信息
         if epoch % display_step == 0:
-            cm, acc = sess.run((cost_matrix,accuracy), feed_dict={X: x_train, Y:y_train})
+            # cm, acc = sess.run((cost_matrix,accuracy), feed_dict={X: x_train, Y:y_train})
 
 
-            print('epoch{}:{}'.format(epoch,acc))
 
             loss_, acc = sess.run((loss,accuracy), feed_dict={X: x_test, Y:y_test})
 
-            print('epoch{}:{}'.format(epoch,loss_))
+            print('epoch{}:loss{} acc{}'.format(epoch,loss_,acc))
 
 
             # print(y_test)

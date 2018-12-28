@@ -66,7 +66,7 @@ p = tf.layers.dense(inputs=h1,units=2)
 
 
 
-cost = tf.losses.sigmoid_cross_entropy(multi_class_labels=y_one_hot,logits=p)
+cost = tf.losses.softmax_cross_entropy(y_one_hot,p)
 w = np.array([1,1],dtype='float32').reshape([2,1])
 w_ls=tf.Variable(w,name="w_ls",trainable=False)
 w_temp = tf.matmul(y_one_hot, w_ls) #代价敏感因子，w是权重项链表
