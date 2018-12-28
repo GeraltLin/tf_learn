@@ -11,25 +11,26 @@ import matplotlib.pyplot as plt
 
 
 saver = tf.train.import_meta_graph("../LR_model/LR.ckpt-666.meta")
-config = tf.ConfigProto(log_device_placement=True,allow_soft_placement
+config = tf.ConfigProto(log_device_placement=False,allow_soft_placement
 =True)
 # 启动session
 config.gpu_options.allow_growth = True
 with tf.Session(config=config) as sess:
     kpt = tf.train.latest_checkpoint('../LR_model')
+
     if kpt != None:
         saver.restore(sess, kpt)
         graph = tf.get_default_graph()
-        tensor_list = [tensor.name for tensor in tf.get_default_graph().as_graph_def().node]
+        # tensor_list = [tensor.name for tensor in tf.get_default_graph().as_graph_def().node]
     z = graph.get_tensor_by_name("fc/z:0")
     x = graph.get_tensor_by_name("x:0")
     feed_dict = {x:3}
     print(sess.run(z,feed_dict=feed_dict))
     print(sess.run(z,feed_dict=feed_dict))
     # saver.save(sess,'../LR_model/LR.ckpt',global_step=666)
-
-    for tensor in tensor_list:
-        print(tensor)
+    #
+    # for tensor in tensor_list:
+    #     print(tensor)
 
 #
 # import os
