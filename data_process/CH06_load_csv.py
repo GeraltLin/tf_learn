@@ -1,7 +1,7 @@
 # encoding: utf-8
 '''
 @author: linwenxing
-@contact: linwenxing@zbj.com
+@contact: linwx.mail@gmail.com
 '''
 
 
