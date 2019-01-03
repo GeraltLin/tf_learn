@@ -148,7 +148,7 @@ def main(argv):
         SepalWidth = tf.placeholder(shape=[None,1],dtype=tf.float32)
         PetalLength = tf.placeholder(shape=[None,1],dtype=tf.float32)
         PetalWidth = tf.placeholder(shape=[None,1],dtype=tf.float32)
-        features = tf.concat([SepalLength, SepalWidth, PetalLength, PetalWidth], axis=-1)
+        features = tf.concat([ PetalLength, PetalWidth,SepalLength, SepalWidth], axis=-1)
 
         params = {
             # Two hidden layers of 10 nodes each.
@@ -162,8 +162,8 @@ def main(argv):
         saver.restore(sess, tf.train.latest_checkpoint(init_checkpoint))
 
     with graph.as_default():
-        feed_dict = {SepalLength: predict_x['SepalLength'], SepalWidth: predict_x['SepalWidth'], PetalLength: predict_x['PetalLength'],
-                     PetalWidth: predict_x['PetalWidth']}
+        feed_dict = { PetalLength: predict_x['PetalLength'],
+                     PetalWidth: predict_x['PetalWidth'],SepalLength: predict_x['SepalLength'], SepalWidth: predict_x['SepalWidth'],}
         predicted_classes = sess.run([predicted_classes], feed_dict)
 
         print(predicted_classes)
